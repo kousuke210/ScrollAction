@@ -368,7 +368,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7498142190150400792}
   - component: {fileID: 8035681660144644490}
-  - component: {fileID: -4671077192163751012}
+  - component: {fileID: 9146510148143879686}
   m_Layer: 0
   m_Name: SlimePolyart
   m_TagString: Enemy
@@ -415,7 +415,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-4671077192163751012
+--- !u!114 &9146510148143879686
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -427,7 +427,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 494243dbbbf368c4f86f383577b73ff3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  bounceForce: 100
+  bounceForce: 10
 --- !u!1 &7446019047767849115
 GameObject:
   m_ObjectHideFlags: 0
