@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -71,6 +71,7 @@ namespace StarterAssets
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
+        private Vector3 _knockbackVelocity;
 
         // timeout deltatime
         private float _jumpTimeoutDelta;
@@ -143,7 +144,18 @@ namespace StarterAssets
         {
             // Grounded判定位置の計算（ZはFixedZPositionに固定）
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, FixedZPosition);
-            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+            
+            // プレイヤー自身を「地面」として誤判定しないように、OverlapSphereで取得して自身を除外する
+            Collider[] colliders = Physics.OverlapSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+            Grounded = false;
+            foreach (var col in colliders)
+            {
+                if (col.gameObject != gameObject)
+                {
+                    Grounded = true;
+                    break;
+                }
+            }
 
             if (_hasAnimator)
             {
@@ -198,8 +210,18 @@ namespace StarterAssets
             // 移動方向（X軸方向のみ）
             Vector3 targetDirection = (moveInputX >= 0 ? Vector3.right : Vector3.left) * (moveInputX != 0 ? 1f : 0f);
 
-            // CharacterControllerによる移動処理（Z軸の移動量は強制ゼロ）
-            Vector3 moveMotion = new Vector3(targetDirection.x * _speed, _verticalVelocity, 0.0f) * Time.deltaTime;
+            // ノックバックの減衰処理
+            if (_knockbackVelocity.magnitude > 0.1f)
+            {
+                _knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, Time.deltaTime * 5f);
+            }
+            else
+            {
+                _knockbackVelocity = Vector3.zero;
+            }
+
+            // CharacterControllerによる移動処理（Z軸の移動量は強制ゼロ、ノックバック加算）
+            Vector3 moveMotion = new Vector3(targetDirection.x * _speed + _knockbackVelocity.x, _verticalVelocity, 0.0f) * Time.deltaTime;
             _controller.Move(moveMotion);
 
             if (_hasAnimator)
@@ -235,6 +257,8 @@ namespace StarterAssets
                     {
                         _animator.SetBool(_animIDJump, true);
                     }
+                    // ジャンプ入力を消費して、無操作での連続ジャンプを防ぐ
+                    _input.jump = false;
                 }
 
                 if (_jumpTimeoutDelta >= 0.0f)
@@ -304,6 +328,18 @@ namespace StarterAssets
         {
             _verticalVelocity = bounceForce;
 
+            if (_hasAnimator)
+            {
+                _animator.SetBool(_animIDJump, true);
+                _animator.SetBool(_animIDFreeFall, false);
+            }
+        }
+
+        public void ApplyKnockback(Vector3 direction, float force)
+        {
+            _knockbackVelocity = direction.normalized * force;
+            _verticalVelocity = force * 0.5f; // 少し浮かす
+            
             if (_hasAnimator)
             {
                 _animator.SetBool(_animIDJump, true);

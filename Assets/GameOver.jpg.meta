@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ad79b8c172378124db52e93889811cd6
+guid: e5bdc5e6d302c9d4cb010a4c37aef272
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "GameClear - \u30B3\u30D4\u30FC_0"
+      name: GameOver_0
       rect:
         serializedVersion: 2
         x: 0
@@ -125,8 +125,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5d381764095dfe34692956dee6220d96
-      internalID: 122224369
+      spriteID: c9bcae9243b559b45add067a7b7e1dea
+      internalID: 121808782
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 17115e4825c451f4095295305b159414
+    spriteID: e363927c6249fee4083307fef0bfa0cb
     internalID: 0
     vertices: []
     indices: 
@@ -145,7 +145,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "GameClear - \u30B3\u30D4\u30FC_0": 122224369
+      GameOver_0: 121808782
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,21 +1,21 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
-public class TitleManager : MonoBehaviour
+public class NextStage : MonoBehaviour
 {
     [Header("遷移先のシーン名")]
-    public string nextSceneName = "Stage1";
-
+    public string nextSceneName = "Stage2";
     private void Update()
     {
+        // スペースキーが押されたらゲーム開始
         if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
         {
-            StartGame();
+            Nextstage();
         }
     }
 
-    public void StartGame()
+    public void Nextstage()
     {
         SceneManager.LoadScene(nextSceneName);
     }

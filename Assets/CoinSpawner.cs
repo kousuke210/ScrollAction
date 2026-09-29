@@ -8,13 +8,11 @@ public class CoinSpawner : MonoBehaviour
     [Header("生成するコインの枚数")]
     public int coinCount = 10;
 
-    [Header("X座標のランダム範囲")]
-    public float minX = 0f;
-    public float maxX = 100f;
+    [Header("コイン出現範囲の始点（最小座標）")]
+    public Vector3 minSpawnPosition = new Vector3(0f, 0.8f, 0f);
 
-    [Header("コインの配置位置（地面のY・Z座標）")]
-    public float spawnY = 0.8f;
-    public float spawnZ = 1.16903f;
+    [Header("コイン出現範囲の終点（最大座標）")]
+    public Vector3 maxSpawnPosition = new Vector3(100f, 3f, 0f);
 
     [Header("重なり防止設定")]
     public float checkRadius = 0.5f;
@@ -50,9 +48,12 @@ public class CoinSpawner : MonoBehaviour
             {
                 attempts++;
 
-                float randomX = Random.Range(minX, maxX);
+                // 決めた座標から座標までの範囲でランダムに選ぶ
+                float randomX = Random.Range(minSpawnPosition.x, maxSpawnPosition.x);
+                float randomY = Random.Range(minSpawnPosition.y, maxSpawnPosition.y);
+                float randomZ = Random.Range(minSpawnPosition.z, maxSpawnPosition.z);
 
-                Vector3 spawnPosition = new Vector3(randomX, spawnY, spawnZ);
+                Vector3 spawnPosition = new Vector3(randomX, randomY, randomZ);
 
                 bool isOverlapping = Physics.CheckSphere(spawnPosition, checkRadius, obstacleLayer);
 
@@ -74,14 +75,17 @@ public class CoinSpawner : MonoBehaviour
         Debug.Log($"{spawnedCount} 枚のコインを重なりなく配置しました。");
     }
 
-    // Sceneビュー上で判定範囲（球体）を視覚的に確認するための処理
+    // Sceneビュー上で判定範囲を視覚的に確認するための処理
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow;
-        Vector3 start = new Vector3(minX, spawnY, spawnZ);
-        Vector3 end = new Vector3(maxX, spawnY, spawnZ);
-        Gizmos.DrawLine(start, end);
-        Gizmos.DrawWireSphere(start, checkRadius);
-        Gizmos.DrawWireSphere(end, checkRadius);
+        Gizmos.color = new Color(1f, 1f, 0f, 0.3f);
+        Vector3 center = (minSpawnPosition + maxSpawnPosition) / 2f;
+        Vector3 size = new Vector3(
+            Mathf.Abs(maxSpawnPosition.x - minSpawnPosition.x),
+            Mathf.Abs(maxSpawnPosition.y - minSpawnPosition.y),
+            Mathf.Abs(maxSpawnPosition.z - minSpawnPosition.z)
+        );
+        Gizmos.DrawCube(center, size);
+        Gizmos.DrawWireCube(center, size);
     }
 }
