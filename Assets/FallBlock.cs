@@ -13,16 +13,24 @@ public class FallBlock : MonoBehaviour
     public float destroyDelay = 3.0f;
 
     private bool isTriggered = false;
-    private bool isFalling = false;
+    public bool isFalling = false;
 
-    // プレイヤーがトリガーに触れたら呼ばれる
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
+
+    private void Start()
+    {
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (isTriggered) return;
 
         if (other.CompareTag("Player"))
         {
-            // プレイヤーがブロックの中心より上にいる（＝乗っている）か判定
+            // プレイヤーが乗っているか判定
             if (other.transform.position.y > transform.position.y)
             {
                 isTriggered = true;
@@ -33,13 +41,12 @@ public class FallBlock : MonoBehaviour
 
     private IEnumerator FallCoroutine()
     {
-        // 指定した時間（fallDelay）だけ待機
         yield return new WaitForSeconds(fallDelay);
 
         isFalling = true;
 
-        // 落下開始から数秒後にこのブロック自身を削除
-        Destroy(gameObject, destroyDelay);
+        yield return new WaitForSeconds(destroyDelay);
+        gameObject.SetActive(false);
     }
 
     private void Update()
@@ -49,5 +56,16 @@ public class FallBlock : MonoBehaviour
             // 毎フレーム、下方向に移動させる
             transform.position += Vector3.down * fallSpeed * Time.deltaTime;
         }
+    }
+
+    // ブロックを初期状態に復活させる
+    public void Respawn()
+    {
+        StopAllCoroutines();
+        isTriggered = false;
+        isFalling = false;
+        transform.position = initialPosition;
+        transform.rotation = initialRotation;
+        gameObject.SetActive(true);
     }
 }

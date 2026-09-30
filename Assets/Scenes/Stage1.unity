@@ -2726,7 +2726,7 @@ GameObject:
   - component: {fileID: 906599949}
   - component: {fileID: 906599948}
   - component: {fileID: 906599947}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Plane (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3217,7 +3217,8 @@ MonoBehaviour:
   spawnCount: 6
   minXPosition: 10
   maxXPosition: 50
-  randomYRange: 0
+  raycastStartY: 15
+  spawnYOffset: 0.1
   overlapRadius: 1
   obstacleLayer:
     serializedVersion: 2
@@ -5896,7 +5897,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Goal
   nextSceneName: StageClear
-  clearEffectPrefab: {fileID: 0}
 --- !u!1 &1775316076
 GameObject:
   m_ObjectHideFlags: 0
@@ -5909,7 +5909,7 @@ GameObject:
   - component: {fileID: 1775316079}
   - component: {fileID: 1775316078}
   - component: {fileID: 1775316077}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}

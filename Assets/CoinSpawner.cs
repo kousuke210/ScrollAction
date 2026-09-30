@@ -38,7 +38,6 @@ public class CoinSpawner : MonoBehaviour
 
         int spawnedCount = 0; // 実際に生成できたコインの数
 
-        // 指定枚数分、重ならない位置を探して生成
         for (int i = 0; i < coinCount; i++)
         {
             int attempts = 0;
@@ -48,7 +47,7 @@ public class CoinSpawner : MonoBehaviour
             {
                 attempts++;
 
-                // 決めた座標から座標までの範囲でランダムに選ぶ
+                // 決めた座標から座標までの範囲でランダムに
                 float randomX = Random.Range(minSpawnPosition.x, maxSpawnPosition.x);
                 float randomY = Random.Range(minSpawnPosition.y, maxSpawnPosition.y);
                 float randomZ = Random.Range(minSpawnPosition.z, maxSpawnPosition.z);
@@ -68,14 +67,10 @@ public class CoinSpawner : MonoBehaviour
 
             if (!success)
             {
-                Debug.LogWarning($"範囲内に空きスペースが見つからず、コイン {i + 1} 枚目の生成をスキップしました。");
             }
         }
-
-        Debug.Log($"{spawnedCount} 枚のコインを重なりなく配置しました。");
     }
 
-    // Sceneビュー上で判定範囲を視覚的に確認するための処理
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = new Color(1f, 1f, 0f, 0.3f);

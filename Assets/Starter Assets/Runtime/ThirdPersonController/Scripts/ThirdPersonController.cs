@@ -28,6 +28,11 @@ namespace StarterAssets
 
         [Tooltip("Acceleration and deceleration")]
         public float SpeedChangeRate = 10.0f;
+        
+        [Header("Ice Physics")]
+        [Tooltip("Ice speed change rate (updated from IceBlock)")]
+        private float IceSpeedChangeRate = 1.5f;
+        private bool _onIce = false;
 
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
@@ -148,13 +153,28 @@ namespace StarterAssets
             // プレイヤー自身を「地面」として誤判定しないように、OverlapSphereで取得して自身を除外する
             Collider[] colliders = Physics.OverlapSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
             Grounded = false;
+            bool hitIce = false;
+            float slipRate = 1.5f;
+
             foreach (var col in colliders)
             {
                 if (col.gameObject != gameObject)
                 {
                     Grounded = true;
-                    break;
+                    IceBlock ice = col.GetComponentInParent<IceBlock>();
+                    if (ice != null)
+                    {
+                        hitIce = true;
+                        slipRate = ice.slipRate;
+                    }
                 }
+            }
+            
+            // 空中にいる間はジャンプ前の状態（滑るか滑らないか）を維持する
+            if (Grounded)
+            {
+                _onIce = hitIce;
+                IceSpeedChangeRate = slipRate;
             }
 
             if (_hasAnimator)
@@ -167,48 +187,62 @@ namespace StarterAssets
         {
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
 
-            // X軸（左右）の入力値のみを使用する（A/Dキー）
+            // X軸（左右）の入力値のみを使用する
             float moveInputX = _input.move.x;
+            
+            // 目標とする速度（符号付き：右はプラス、左はマイナス）
+            float targetVelocityX = moveInputX * targetSpeed;
+            
+            // 現在の純粋な移動速度（実際の速度からノックバック分を引くことで壁衝突なども考慮）
+            float currentVelocityX = _controller.velocity.x - _knockbackVelocity.x;
 
-            if (Mathf.Approximately(moveInputX, 0f))
+            if (_onIce)
             {
-                targetSpeed = 0.0f;
-            }
-
-            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, 0.0f).magnitude;
-            float speedOffset = 0.1f;
-            float inputMagnitude = Mathf.Abs(moveInputX);
-
-            if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-                currentHorizontalSpeed > targetSpeed + speedOffset)
-            {
-                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
-                _speed = Mathf.Round(_speed * 1000f) / 1000f;
+                // 氷の床：加速度と摩擦（滑り）を分けて計算（Lerpではなく定速のMoveTowardsを使うとスーッと滑る）
+                if (Mathf.Abs(moveInputX) > 0.01f)
+                {
+                    // 切り返し時（逆方向に入力）は滑りながら減速する
+                    if (Mathf.Sign(moveInputX) != Mathf.Sign(currentVelocityX) && Mathf.Abs(currentVelocityX) > 0.1f)
+                    {
+                        _speed = Mathf.MoveTowards(currentVelocityX, targetVelocityX, Time.deltaTime * IceSpeedChangeRate * 4f);
+                    }
+                    else
+                    {
+                        // 加速時はモッサリしないように素早くトップスピードに乗せる
+                        _speed = Mathf.MoveTowards(currentVelocityX, targetVelocityX, Time.deltaTime * 15.0f);
+                    }
+                }
+                else
+                {
+                    // 入力なし：一定の摩擦でスーッと滑り続ける
+                    _speed = Mathf.MoveTowards(currentVelocityX, 0f, Time.deltaTime * IceSpeedChangeRate * 2f);
+                }
             }
             else
             {
-                _speed = targetSpeed;
+                // 通常の床：Lerpでキビキビとした動き
+                _speed = Mathf.Lerp(currentVelocityX, targetVelocityX, Time.deltaTime * SpeedChangeRate);
             }
 
-            _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+            // アニメーションブレンドの計算（絶対値）
+            float targetBlend = Mathf.Abs(targetVelocityX);
+            float animRate = _onIce ? 10.0f : SpeedChangeRate; // 氷上でもアニメの切り替わりはモッサリさせない
+            _animationBlend = Mathf.Lerp(_animationBlend, targetBlend, Time.deltaTime * animRate);
             if (_animationBlend < 0.01f) _animationBlend = 0f;
 
-            // A/D入力による向き（角度）の決定
+            // A/D入力がある場合のみ向きを更新
             if (moveInputX > 0.01f)
             {
-                _targetRotation = 90.0f; // Dキー: 右向き
+                _targetRotation = 90.0f; // 右向き
             }
             else if (moveInputX < -0.01f)
             {
-                _targetRotation = 270.0f; // Aキー: 左向き
+                _targetRotation = 270.0f; // 左向き
             }
 
             // スムーズに振り向く処理
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-
-            // 移動方向（X軸方向のみ）
-            Vector3 targetDirection = (moveInputX >= 0 ? Vector3.right : Vector3.left) * (moveInputX != 0 ? 1f : 0f);
 
             // ノックバックの減衰処理
             if (_knockbackVelocity.magnitude > 0.1f)
@@ -220,14 +254,14 @@ namespace StarterAssets
                 _knockbackVelocity = Vector3.zero;
             }
 
-            // CharacterControllerによる移動処理（Z軸の移動量は強制ゼロ、ノックバック加算）
-            Vector3 moveMotion = new Vector3(targetDirection.x * _speed + _knockbackVelocity.x, _verticalVelocity, 0.0f) * Time.deltaTime;
+            // CharacterControllerによる移動処理（Z軸は固定、新しい符号付き速度を適用）
+            Vector3 moveMotion = new Vector3(_speed + _knockbackVelocity.x, _verticalVelocity, 0.0f) * Time.deltaTime;
             _controller.Move(moveMotion);
 
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
-                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+                _animator.SetFloat(_animIDMotionSpeed, Mathf.Abs(moveInputX));
             }
         }
 

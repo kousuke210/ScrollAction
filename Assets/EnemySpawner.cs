@@ -13,20 +13,24 @@ public class EnemySpawner : MonoBehaviour
     public int spawnCount = 5;
 
     [Header("ランダム出現範囲")]
-    [Tooltip("X軸の出現開始位置（例:10なら10より右にしか出ない）")]
     public float minXPosition = 10.0f;
     
     [Tooltip("X軸の出現終了位置（どこまで右に出るか）")]
     public float maxXPosition = 50.0f;
-    
-    [Tooltip("Y軸（上下）にずらす最大距離")]
-    public float randomYRange = 0.0f;
 
-    [Header("重なり回避設定")]
-    [Tooltip("他のスライムやオブジェクトとどれくらい離すか（半径）")]
+    [Header("地面・重なり回避設定")]
+    [Tooltip("地形を探索するためにレイ（光線）を飛ばし始める高さ")]
+    public float raycastStartY = 15.0f;
+
+    [Tooltip("地面からどれくらい浮かせて生成するか（スライムの原点に合わせる）")]
+    public float spawnYOffset = 0.1f;
+
+    [Tooltip("他のスライムや壁とどれくらい離すか（半径）")]
     public float overlapRadius = 1.0f;
-    [Tooltip("障害物として判定するレイヤー")]
+
+    [Tooltip("地面や障害物として判定するレイヤー")]
     public LayerMask obstacleLayer;
+
     [Tooltip("場所探しの最大やり直し回数")]
     public int maxSpawnAttempts = 15;
 
@@ -58,13 +62,19 @@ public class EnemySpawner : MonoBehaviour
                 // 2体目以降はランダムに重ならない場所
                 for (int attempt = 0; attempt < maxSpawnAttempts; attempt++)
                 {
-                    // プレイヤーより右(X=10以降)に指定範囲内でランダム配置
                     float randomX = Random.Range(minXPosition, maxXPosition);
-                    float randomOffsetY = Random.Range(-randomYRange, randomYRange);
                     
-                    Vector3 candidatePos = new Vector3(randomX, basePosition.y + randomOffsetY, 0f);
+                    // 1. はるか上空から下に向けてレイ（光線）を飛ばし、地面を見つける
+                    Vector3 rayStart = new Vector3(randomX, basePosition.y + raycastStartY, 0f);
+                    if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 50f, obstacleLayer))
+                    {
+                        continue; // 下に地面がない（穴の上など）場合はやり直し
+                    }
 
-                    // 1. 他の生成済みスライムと近すぎないかチェック
+                    // 地面の高さ ＋ オフセット（めり込み防止）を候補位置にする
+                    Vector3 candidatePos = hit.point + Vector3.up * spawnYOffset;
+
+                    // 2. 他の生成済みスライムと近すぎないかチェック
                     bool isTooCloseToOtherSlime = false;
                     foreach (Vector3 pos in spawnedPositions)
                     {
@@ -74,14 +84,22 @@ public class EnemySpawner : MonoBehaviour
                             break;
                         }
                     }
-
                     if (isTooCloseToOtherSlime) continue; // 近すぎたらやり直し
 
-                    // 2. 他のオブジェクト（壁など）と重なっていないかチェック
-                    if (Physics.CheckSphere(candidatePos, overlapRadius, obstacleLayer))
+                    // 3. 他のオブジェクト（壁など）と重なっていないかチェック
+                    // 足元の地面（hit.collider）は重なり判定から除外する
+                    bool hitWall = false;
+                    Collider[] colliders = Physics.OverlapSphere(candidatePos + Vector3.up * (overlapRadius * 0.5f), overlapRadius * 0.8f, obstacleLayer);
+                    foreach (var col in colliders)
                     {
-                        continue; // 重なっていたらやり直し
+                        if (col != hit.collider && !col.isTrigger)
+                        {
+                            hitWall = true;
+                            break;
+                        }
                     }
+
+                    if (hitWall) continue; // 壁などにめり込んでいたらやり直し
 
                     spawnPosition = candidatePos;
                     positionFound = true;

@@ -21,6 +21,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("落下設定")]
     public float fallThresholdY = -10f;
     private Vector3 lastSafePosition;
+    private FallBlock lastSafeFallBlock;
 
     private ThirdPersonController controller;
 
@@ -36,7 +37,27 @@ public class PlayerHealth : MonoBehaviour
     {
         if (controller != null && controller.Grounded)
         {
-            lastSafePosition = transform.position;
+            RaycastHit[] hits = Physics.SphereCastAll(transform.position + Vector3.up * 0.5f, 0.4f, Vector3.down, 1.0f);
+            FallBlock currentFallBlock = null;
+            
+            foreach (var h in hits)
+            {
+                if (h.collider.gameObject == gameObject) continue;
+                if (h.collider.isTrigger) continue;
+
+                FallBlock fb = h.collider.GetComponentInParent<FallBlock>();
+                if (fb != null)
+                {
+                    currentFallBlock = fb;
+                    break;
+                }
+            }
+
+            if (currentFallBlock == null || !currentFallBlock.isFalling)
+            {
+                lastSafePosition = transform.position;
+                lastSafeFallBlock = currentFallBlock;
+            }
         }
 
         // 指定したY座標より下に落ちたら落下ダメージ
@@ -62,6 +83,11 @@ public class PlayerHealth : MonoBehaviour
             CharacterController cc = GetComponent<CharacterController>();
             if (cc != null) cc.enabled = false;
             
+            if (lastSafeFallBlock != null)
+            {
+                lastSafeFallBlock.Respawn();
+            }
+
             transform.position = lastSafePosition + new Vector3(0, 1.0f, 0);
             
             if (cc != null) cc.enabled = true;
@@ -86,10 +112,9 @@ public class PlayerHealth : MonoBehaviour
         }
         else
         {
-            // ノックバック処理
+            // ノックバック
             if (controller != null)
             {
-                // ダメージ元から遠ざかる方向（左右）
                 Vector3 knockbackDir = (transform.position - damageSourcePosition).normalized;
                 knockbackDir.y = 0;
                 knockbackDir.z = 0;
@@ -107,7 +132,6 @@ public class PlayerHealth : MonoBehaviour
     {
         if (lifeText != null)
         {
-            // 日本語フォントがないための文字化け（□□になる）を防ぐため、英語に変更
             lifeText.text = $"Life : {currentLife}";
         }
     }
@@ -116,7 +140,7 @@ public class PlayerHealth : MonoBehaviour
     {
         GameOverManager.lastSceneName = SceneManager.GetActiveScene().name;
 
-        // ライフが0になったらゲームオーバーシーンへ遷移
+        // ライフが0になったらゲームオーバーシーンへ
         SceneManager.LoadScene(gameOverSceneName);
     }
 }

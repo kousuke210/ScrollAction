@@ -8,7 +8,7 @@ public class NextStage : MonoBehaviour
     public string nextSceneName = "Stage2";
     private void Update()
     {
-        // スペースキーが押されたらゲーム開始
+        // スペースキーが押されたら次のステージ
         if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             Nextstage();
