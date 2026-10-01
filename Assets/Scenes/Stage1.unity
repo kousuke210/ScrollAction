@@ -817,7 +817,7 @@ GameObject:
   - component: {fileID: 397137293}
   - component: {fileID: 397137292}
   - component: {fileID: 397137291}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Cube (3)
   m_TagString: Stage
   m_Icon: {fileID: 0}
@@ -1173,7 +1173,7 @@ GameObject:
   - component: {fileID: 508903447}
   - component: {fileID: 508903446}
   - component: {fileID: 508903445}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Cube (5)
   m_TagString: Stage
   m_Icon: {fileID: 0}
@@ -1707,7 +1707,7 @@ GameObject:
   - component: {fileID: 523160363}
   - component: {fileID: 523160362}
   - component: {fileID: 523160361}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Stage
   m_Icon: {fileID: 0}
@@ -2063,7 +2063,7 @@ GameObject:
   - component: {fileID: 704218329}
   - component: {fileID: 704218328}
   - component: {fileID: 704218327}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Cube (6)
   m_TagString: Stage
   m_Icon: {fileID: 0}
@@ -2680,7 +2680,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4416926081852918490, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: GroundLayers.m_Bits
-      value: 137
+      value: 649
       objectReference: {fileID: 0}
     - target: {fileID: 4416926081852918493, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -2841,7 +2841,7 @@ GameObject:
   - component: {fileID: 955858170}
   - component: {fileID: 955858169}
   - component: {fileID: 955858168}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Cube (4)
   m_TagString: Stage
   m_Icon: {fileID: 0}
@@ -3214,7 +3214,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefab: {fileID: 7153141402127884706, guid: a4ec793513574cd49719c4055b630e2b, type: 3}
   spawnPoint: {fileID: 794384099}
-  spawnCount: 6
+  spawnCount: 5
   minXPosition: 10
   maxXPosition: 50
   raycastStartY: 15
@@ -3222,7 +3222,7 @@ MonoBehaviour:
   overlapRadius: 1
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 448
+    m_Bits: 4294967295
   maxSpawnAttempts: 15
 --- !u!4 &958436485
 Transform:
@@ -3537,7 +3537,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1046016371}
   - component: {fileID: 1046016370}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BGM
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3557,7 +3557,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 982c46d331569b444907dd62047b2893, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.1
   m_Pitch: 1.3
   Loop: 1
   Mute: 0
@@ -4101,7 +4101,7 @@ GameObject:
   - component: {fileID: 1302144088}
   - component: {fileID: 1302144087}
   - component: {fileID: 1302144086}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Cube (8)
   m_TagString: Stage
   m_Icon: {fileID: 0}
@@ -5161,7 +5161,7 @@ GameObject:
   - component: {fileID: 1674423559}
   - component: {fileID: 1674423558}
   - component: {fileID: 1674423557}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Stage
   m_Icon: {fileID: 0}
@@ -5644,7 +5644,7 @@ GameObject:
   - component: {fileID: 1692790755}
   - component: {fileID: 1692790754}
   - component: {fileID: 1692790753}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Cube (7)
   m_TagString: Stage
   m_Icon: {fileID: 0}
@@ -6290,7 +6290,7 @@ GameObject:
   - component: {fileID: 1891153938}
   - component: {fileID: 1891153937}
   - component: {fileID: 1891153936}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Cube (1)
   m_TagString: Stage
   m_Icon: {fileID: 0}
@@ -6828,7 +6828,7 @@ GameObject:
   - component: {fileID: 2111380862}
   - component: {fileID: 2111380861}
   - component: {fileID: 2111380860}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Cube (2)
   m_TagString: Stage
   m_Icon: {fileID: 0}

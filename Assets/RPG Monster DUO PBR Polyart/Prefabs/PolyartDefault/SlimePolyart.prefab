@@ -482,7 +482,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlimeEnemy
   bounceForce: 5
-  defeatEffect: {fileID: 0}
+  defeatSound: {fileID: 8300000, guid: cf0b5ae2a731438409377a71b15533ef, type: 3}
   stompThreshold: 0.5
   scoreValue: 300
 --- !u!1 &9111356269650961856

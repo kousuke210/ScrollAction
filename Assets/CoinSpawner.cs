@@ -23,7 +23,7 @@ public class CoinSpawner : MonoBehaviour
     [Tooltip("位置被り時の最大再試行回数")]
     public int maxAttemptsPerCoin = 100;
 
-    void Start()
+    void Awake()
     {
         SpawnCoins();
     }

@@ -44,6 +44,7 @@ public class EnemySpawner : MonoBehaviour
         if (enemyPrefab == null) return;
 
         List<Vector3> spawnedPositions = new List<Vector3>();
+        Coin[] allCoins = FindObjectsOfType<Coin>();
         Vector3 basePosition = (spawnPoint != null) ? spawnPoint.position : transform.position;
 
         for (int i = 0; i < spawnCount; i++)
@@ -51,7 +52,7 @@ public class EnemySpawner : MonoBehaviour
             Vector3 spawnPosition = Vector3.zero;
             bool positionFound = false;
 
-            // 最初の一体目は固定位置 (X:11, Y:0, Z:0)
+            // 最初の一体目は固定位置
             if (i == 0)
             {
                 spawnPosition = new Vector3(11f, 0f, 0f);
@@ -64,17 +65,27 @@ public class EnemySpawner : MonoBehaviour
                 {
                     float randomX = Random.Range(minXPosition, maxXPosition);
                     
-                    // 1. はるか上空から下に向けてレイ（光線）を飛ばし、地面を見つける
                     Vector3 rayStart = new Vector3(randomX, basePosition.y + raycastStartY, 0f);
-                    if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 50f, obstacleLayer))
+                    if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 50f, obstacleLayer, QueryTriggerInteraction.Ignore))
                     {
-                        continue; // 下に地面がない（穴の上など）場合はやり直し
+                        continue;
                     }
 
-                    // 地面の高さ ＋ オフセット（めり込み防止）を候補位置にする
+                    if (hit.collider.gameObject.layer == LayerMask.NameToLayer("End"))
+                    {
+                        continue;
+                    }
+
                     Vector3 candidatePos = hit.point + Vector3.up * spawnYOffset;
 
-                    // 2. 他の生成済みスライムと近すぎないかチェック
+                    Vector3 leftCheckStart = candidatePos + Vector3.left * overlapRadius + Vector3.up;
+                    Vector3 rightCheckStart = candidatePos + Vector3.right * overlapRadius + Vector3.up;
+                    if (!Physics.Raycast(leftCheckStart, Vector3.down, 2f, obstacleLayer, QueryTriggerInteraction.Ignore) ||
+                        !Physics.Raycast(rightCheckStart, Vector3.down, 2f, obstacleLayer, QueryTriggerInteraction.Ignore))
+                    {
+                        continue;
+                    }
+
                     bool isTooCloseToOtherSlime = false;
                     foreach (Vector3 pos in spawnedPositions)
                     {
@@ -84,22 +95,34 @@ public class EnemySpawner : MonoBehaviour
                             break;
                         }
                     }
-                    if (isTooCloseToOtherSlime) continue; // 近すぎたらやり直し
+                    if (isTooCloseToOtherSlime) continue;
 
-                    // 3. 他のオブジェクト（壁など）と重なっていないかチェック
-                    // 足元の地面（hit.collider）は重なり判定から除外する
+                    bool isTooCloseToCoin = false;
+                    foreach (Coin coin in allCoins)
+                    {
+                        if (Vector3.Distance(candidatePos, coin.transform.position) < overlapRadius * 2f)
+                        {
+                            isTooCloseToCoin = true;
+                            break;
+                        }
+                    }
+                    if (isTooCloseToCoin) continue;
+
                     bool hitWall = false;
                     Collider[] colliders = Physics.OverlapSphere(candidatePos + Vector3.up * (overlapRadius * 0.5f), overlapRadius * 0.8f, obstacleLayer);
                     foreach (var col in colliders)
                     {
-                        if (col != hit.collider && !col.isTrigger)
+                        if (col != hit.collider)
                         {
-                            hitWall = true;
-                            break;
+                            if (!col.isTrigger || col.GetComponent<Coin>() != null)
+                            {
+                                hitWall = true;
+                                break;
+                            }
                         }
                     }
 
-                    if (hitWall) continue; // 壁などにめり込んでいたらやり直し
+                    if (hitWall) continue;
 
                     spawnPosition = candidatePos;
                     positionFound = true;
@@ -107,7 +130,6 @@ public class EnemySpawner : MonoBehaviour
                 }
             }
 
-            // 無事に場所が見つかった場合のみ生成
             if (positionFound)
             {
                 Quaternion spawnRotation = Quaternion.Euler(0f, -90f, 0f);

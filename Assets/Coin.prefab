@@ -129,3 +129,5 @@ MonoBehaviour:
   rotateSpeed: 360
   riseSpeed: 3
   riseDuration: 0.5
+  collectSound: {fileID: 8300000, guid: d81c651b3b4fb8b4882fe515190e51e7, type: 3}
+  collectSoundVolume: 1.5

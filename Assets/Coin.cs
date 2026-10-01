@@ -10,6 +10,11 @@ public class Coin : MonoBehaviour
     public float riseSpeed = 3f;
     public float riseDuration = 0.5f;
 
+    [Header("ゲット時の音")]
+    public AudioClip collectSound;
+    [Range(0f, 2f)]
+    public float collectSoundVolume = 1f;
+
     private bool isCollected = false;
     private Collider coinCollider;
 
@@ -37,6 +42,11 @@ public class Coin : MonoBehaviour
     private IEnumerator CollectSequence()
     {
         isCollected = true;
+
+        if (collectSound != null)
+        {
+            AudioSource.PlayClipAtPoint(collectSound, transform.position, collectSoundVolume);
+        }
 
         if (coinCollider != null)
         {

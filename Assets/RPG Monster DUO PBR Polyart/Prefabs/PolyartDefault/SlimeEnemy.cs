@@ -6,8 +6,8 @@ public class SlimeEnemy : MonoBehaviour
     [Header("踏まれた時の跳ね返る力")]
     public float bounceForce = 5f;
 
-    [Header("やられた時のエフェクト（任意）")]
-    public GameObject defeatEffect;
+    [Header("やられた時の音")]
+    public AudioClip defeatSound;
 
     [Header("踏みつけ判定の高さ（スライムの高さに応じて調整）")]
     public float stompThreshold = 0.5f;
@@ -56,9 +56,9 @@ public class SlimeEnemy : MonoBehaviour
             ScoreManager.Instance.AddScore(scoreValue);
         }
 
-        if (defeatEffect != null)
+        if (defeatSound != null)
         {
-            Instantiate(defeatEffect, transform.position, Quaternion.identity);
+            AudioSource.PlayClipAtPoint(defeatSound, transform.position);
         }
 
         Destroy(transform.root.gameObject);
