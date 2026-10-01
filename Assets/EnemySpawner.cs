@@ -52,16 +52,8 @@ public class EnemySpawner : MonoBehaviour
             Vector3 spawnPosition = Vector3.zero;
             bool positionFound = false;
 
-            // 最初の一体目は固定位置
-            if (i == 0)
-            {
-                spawnPosition = new Vector3(11f, 0f, 0f);
-                positionFound = true;
-            }
-            else
-            {
-                // 2体目以降はランダムに重ならない場所
-                for (int attempt = 0; attempt < maxSpawnAttempts; attempt++)
+            // すべての敵をランダムな位置に生成
+            for (int attempt = 0; attempt < maxSpawnAttempts; attempt++)
                 {
                     float randomX = Random.Range(minXPosition, maxXPosition);
                     
@@ -128,7 +120,6 @@ public class EnemySpawner : MonoBehaviour
                     positionFound = true;
                     break; 
                 }
-            }
 
             if (positionFound)
             {

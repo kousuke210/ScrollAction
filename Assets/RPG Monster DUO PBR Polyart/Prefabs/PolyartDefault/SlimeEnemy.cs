@@ -6,8 +6,14 @@ public class SlimeEnemy : MonoBehaviour
     [Header("踏まれた時の跳ね返る力")]
     public float bounceForce = 5f;
 
-    [Header("やられた時の音")]
-    public AudioClip defeatSound;
+    private AudioSource[] audioSources;
+
+    private void Start()
+    {
+        // Bodyなどの子オブジェクトに付けられたAudioSourceをすべて取得
+        // [0] がやられた時の音、[1] がダメージ音
+        audioSources = GetComponentsInChildren<AudioSource>();
+    }
 
     [Header("踏みつけ判定の高さ（スライムの高さに応じて調整）")]
     public float stompThreshold = 0.5f;
@@ -37,6 +43,11 @@ public class SlimeEnemy : MonoBehaviour
                 // それ以外（地上を走ってぶつかった、ジャンプ中だけど横からぶつかった等）はダメージ
                 Debug.Log("横から接触");
                 
+                if (audioSources != null && audioSources.Length > 1)
+                {
+                    audioSources[1].Play(); // 2つ目（ダメージ音）を再生
+                }
+                
                 PlayerHealth health = other.GetComponent<PlayerHealth>();
                 if (health != null)
                 {
@@ -56,12 +67,27 @@ public class SlimeEnemy : MonoBehaviour
             ScoreManager.Instance.AddScore(scoreValue);
         }
 
-        if (defeatSound != null)
+        if (audioSources != null && audioSources.Length > 0 && audioSources[0] != null)
         {
-            AudioSource.PlayClipAtPoint(defeatSound, transform.position);
+            AudioSource defeatAudioSource = audioSources[0];
+            defeatAudioSource.Play();
+            // 音が鳴り終わるまで待ってからオブジェクトを削除する
+            float delay = defeatAudioSource.clip != null ? defeatAudioSource.clip.length : 1f;
+            Destroy(transform.root.gameObject, delay);
+        }
+        else
+        {
+            Destroy(transform.root.gameObject);
         }
 
-        Destroy(transform.root.gameObject);
+        // 削除されるまでの間、当たり判定と見た目（子オブジェクト）を消して見えなくする
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        foreach (Transform child in transform)
+        {
+            child.gameObject.SetActive(false);
+        }
 
     }
 }

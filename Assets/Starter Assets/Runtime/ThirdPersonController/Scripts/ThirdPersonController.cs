@@ -38,6 +38,9 @@ namespace StarterAssets
         public AudioClip[] FootstepAudioClips;
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
 
+        [Header("ジャンプ音（AudioSource）")]
+        public AudioSource jumpAudioSource;
+
         [Space(10)]
         [Tooltip("The height the player can jump")]
         public float JumpHeight = 1.5f;
@@ -290,6 +293,11 @@ namespace StarterAssets
                     if (_hasAnimator)
                     {
                         _animator.SetBool(_animIDJump, true);
+                    }
+
+                    if (jumpAudioSource != null)
+                    {
+                        jumpAudioSource.Play();
                     }
                     // ジャンプ入力を消費して、無操作での連続ジャンプを防ぐ
                     _input.jump = false;
