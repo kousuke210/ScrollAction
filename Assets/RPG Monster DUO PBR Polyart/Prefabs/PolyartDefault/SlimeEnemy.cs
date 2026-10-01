@@ -63,6 +63,7 @@ public class SlimeEnemy : MonoBehaviour
             Instantiate(defeatEffect, transform.position, Quaternion.identity);
         }
 
-        Destroy(gameObject);
+        Destroy(transform.root.gameObject);
+
     }
 }

@@ -368,8 +368,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7498142190150400792}
   - component: {fileID: 8035681660144644490}
-  - component: {fileID: 6131881231588946171}
-  - component: {fileID: -1138209706783579645}
   m_Layer: 0
   m_Name: SlimePolyart
   m_TagString: Enemy
@@ -416,43 +414,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!135 &6131881231588946171
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7153141402127884706}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0.4, z: 0}
---- !u!114 &-1138209706783579645
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7153141402127884706}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 289b99e8563db8248a894c6711d3211d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SlimeEnemy
-  bounceForce: 4.5
-  defeatEffect: {fileID: 0}
-  stompThreshold: 1
-  scoreValue: 300
 --- !u!1 &7446019047767849115
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,6 +424,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6219856073057785545}
   - component: {fileID: 1583581076504364502}
+  - component: {fileID: 9128749914172934357}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -501,12 +463,28 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.4
+  m_Radius: 0.45
   m_Center: {x: -0.3, y: 0.1, z: 0}
+--- !u!114 &9128749914172934357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7446019047767849115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 289b99e8563db8248a894c6711d3211d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeEnemy
+  bounceForce: 5
+  defeatEffect: {fileID: 0}
+  stompThreshold: 0.5
+  scoreValue: 300
 --- !u!1 &9111356269650961856
 GameObject:
   m_ObjectHideFlags: 0
