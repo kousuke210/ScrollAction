@@ -25,10 +25,8 @@ public class SlimeEnemy : MonoBehaviour
         {
             ThirdPersonController player = other.GetComponent<ThirdPersonController>();
             
-            // プレイヤーがスライムより少し高い位置にいるか判定（以前うまく動いていた0.1fに戻します）
             bool isAbove = other.transform.position.y > transform.position.y + 0.1f;
 
-            // 「空中にいる（ジャンプや落下中）」かつ「上から接触した」場合のみ踏みつけ判定
             if (isAbove && player != null && !player.Grounded)
             {
                 player.Bounce(bounceForce);
